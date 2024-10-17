@@ -53,10 +53,20 @@ void setup() {
   // TODO: delete most of this code by using the FastLED triwave8() func
   //       also look into other provided funcs
   //       (maybe beatsin8 would be even better?)
-  // start moving upward from the bottom part of the wave
+
+  /*
+    start moving upward from the wave minimum, so we're going to generate this:
+    MAX |     /\
+        |    /  \
+    0___|___/____\_
+  */
   double slope = MAXBRIGHT / (WAVELENGTH / 3);
   int val = -1 * MAXBRIGHT;
   for (int i=0; i < WAVELENGTH; i++) {
+    // TODO: probably going to be some errors in here
+    // wrt int -> double -> int conversion
+    
+    // clamp to 0 while val is negative
     if (val >= 0) {
       waveform[i] = val;
     } else {
@@ -64,6 +74,8 @@ void setup() {
     }
 
     val = floor(val + slope);
+
+    // once we hit max, start going down
     if (val >= MAXBRIGHT) {
       val = MAXBRIGHT;
       slope *= -1;
@@ -71,10 +83,14 @@ void setup() {
   }
 }
 
-int Ridx = (2* WAVELENGTH) / 3;
+// these offsets will make the cycle start at 100% red,
+// as in the diagram above
+int Ridx = (2 * WAVELENGTH) / 3;
 int Gidx = WAVELENGTH / 3;
 int Bidx = 0;
 void loop() {
+  // scan through the full waveform to assign a different value
+  // to each LED, looping back to the start as necessary
   for(int n=0; n < NUM_LEDS; n++) {
     leds[n].r = waveform[Ridx];
     leds[n].g = waveform[Gidx];
