@@ -3,10 +3,12 @@
 #define DATA_PIN 5
 CRGB leds[NUM_LEDS];
 int halfWaveLength = 8; //the number of segments ahead and behind a moving peak until the
-int numColorPeaks = 5; //NUM_LEDS / halfWaveLength (Round down) + 2
+int numColorPeaks = 3; //NUM_LEDS / halfWaveLength (Round down) + 2
 long cylcleTime = 30000; //How many ms it takes a color to move one halfWaveLength
-float peakPosition[numColorPeaks];
-int peakColors[numColorPeaks][3];
+float peakPosition[3]; //[numColorPeaks]
+
+
+int peakColors[3][3];  //[numColorPeaks]
 int delayTime = 500;
 
 
@@ -19,13 +21,14 @@ void setup() { FastLED.addLeds<WS2811, DATA_PIN>(leds, NUM_LEDS);
   }
 }
 
-void resetColor(int i) [
+void resetColor(int i) {
   
   peakColors[i][0] = random(0,254); //red value
   peakColors[i][1] = random(0,254); //grn value
   peakColors[i][2] = random(0,254); //blu value
   
-]
+}
+
 void loop() {
 
   //Move peaks by time
@@ -33,7 +36,7 @@ void loop() {
     peakPosition[i] = peakPosition[i] + delayTime / cylcleTime * halfWaveLength;
 
     //Check if any peaks are past (numColorPeaks - 2 ) * halfWaveLength.  If so, move them back by numColorPeaks * halfWaveLength (sent back to beginning)
-    if (peakPosition[i] > ((numColorPeaks - 2 ) * halfWaveLength))) {
+    if (peakPosition[i] > ((numColorPeaks - 2 ) * halfWaveLength)) {
       peakPosition[i] =peakPosition[i] - numColorPeaks * halfWaveLength;
       resetColor(i);
     }
@@ -56,9 +59,9 @@ void loop() {
       for (int j = segStart; j < (segStart + 2 * halfWaveLength - 1); j++) { //cycling through the segments attached to that peak
       if ((j > 0) && (j <= NUM_LEDS) ) {//Check if this is an actual led
         distanceProp = abs((peakPosition[i] - j) / halfWaveLength);
-        leds[n].r = leds[n].r + (int) (distanceProp * peakColors[i][0]);
-        leds[n].g = leds[n].g + (int) (distanceProp * peakColors[i][1]);
-        leds[n].b = leds[n].b + (int) (distanceProp * peakColors[i][2]);
+        leds[j].r = leds[j].r + (int) (distanceProp * peakColors[i][0]);
+        leds[j].g = leds[j].g + (int) (distanceProp * peakColors[i][1]);
+        leds[j].b = leds[j].b + (int) (distanceProp * peakColors[i][2]);
         }
       }
   }
