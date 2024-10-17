@@ -3,7 +3,7 @@
 #define DATA_PIN 5
 #define WAVELENGTH 768 // # of steps peak-to-peak 
 #define MAXBRIGHT 255  // maximum brightness level (min is 0)
-#define DELAY_MS       // delay before updating colors, in ms
+#define DELAY_MS 100   // delay before updating colors, in ms
 
 /*
   we're going to use a triangle wave that's truncated below 0, like so:
